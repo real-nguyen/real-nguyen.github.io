@@ -1,0 +1,17 @@
+.Clock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.Clock h1 {
+  font-size: 40vh;
+  background-color: #1a0000;
+  color: red;
+  font-family: 'digital-7';
+  border-radius: 3%;
+  width: 2.5em;
+  /* h1 are bold by default */
+  font-weight: lighter;
+}
