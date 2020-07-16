@@ -16,26 +16,39 @@
   font-weight: lighter;
 }
 
-.Clock .timeMode {
+.hidden {
+  visibility: hidden;
+}
+
+.Clock .timeMode,
+.Clock .amPm {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1em;
-  margin-left: 0.7em;
+  gap: 5vh;
 }
 
-.Clock .timeMode span {
+.Clock .timeMode {
+  margin-right: 5vh;
+}
+
+.Clock .amPm {
+  margin-left: 5vh;
+}
+
+.Clock .timeMode span,
+.Clock .amPm span {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.7em;
+  font-size: 12vh;
   font-style: italic;
   cursor: pointer;
 }
 
-.Clock .timeMode .activeTimeMode {
+.active {
   color: #a9a9a9;
 }
 
-.Clock .timeMode .inactiveTimeMode {
-  color: #393939;
+.inactive {
+  color: #292929;
 }
