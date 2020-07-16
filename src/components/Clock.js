@@ -1,25 +1,36 @@
 import React from 'react';
 import './Clock.css';
-import PropTypes from 'prop-types';
 
 export class Clock extends React.Component {
-  setTime() {
-    const { timeMode } = this.props;
+  constructor(props) {
+    super(props);
+    this.state = {
+      isHour12: false,
+      time: this.setTime.bind(this)
+    };
+  }
+
+  setTime = () => {
+    const { isHour12 } = this.state;
     let time = new Date().toLocaleTimeString([], { 
-      hour12: timeMode === '12', 
+      hour12: isHour12, 
       hour: '2-digit', 
       minute: '2-digit' 
     });
-    if (timeMode === '12') {
+    if (isHour12) {
       // Remove AM/PM indicator
       return time.split(' ')[0];
     }
     return time;
   }
 
-  state = {
-    time: this.setTime()
-  };
+  toggleTimeMode = () => {
+    this.setState({
+      isHour12: !this.state.isHour12
+    },
+    // Add tick as callback for instant feedback
+    () => this.tick());
+  }
   
   tick() {
     this.setState({ time: this.setTime() });
@@ -37,21 +48,25 @@ export class Clock extends React.Component {
   }
 
   render () {
-    const { timeMode } = this.props;
+    const { isHour12 } = this.state;
     return (
       <div className="Clock">
         <h1>{this.state.time}</h1>
         <div className="timeMode">
-          <span className={timeMode === '24' ? "activeTimeMode" : "inactiveTimeMode"}>24H</span>
-          <span className={timeMode === '12' ? "activeTimeMode" : "inactiveTimeMode"}>12H</span>
+          <span 
+          className={!isHour12 ? "activeTimeMode" : "inactiveTimeMode"}
+          onClick={this.toggleTimeMode.bind(this)}>
+            24H
+          </span>
+          <span 
+          className={isHour12 ? "activeTimeMode" : "inactiveTimeMode"}
+          onClick={this.toggleTimeMode.bind(this)}>
+            12H
+          </span>
         </div>
       </div>
     )
   }
-}
-
-Clock.propTypes = {
-  timeMode: PropTypes.object.isRequired
 }
 
 export default Clock;
