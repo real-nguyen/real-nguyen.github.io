@@ -37,11 +37,13 @@ export class Clock extends React.Component {
   }
 
   render () {
+    const { timeMode } = this.props;
     return (
       <div className="Clock">
         <h1>{this.state.time}</h1>
-        <div className="hourMode">
-
+        <div className="timeMode">
+          <span className={timeMode === '24' ? "activeTimeMode" : "inactiveTimeMode"}>24H</span>
+          <span className={timeMode === '12' ? "activeTimeMode" : "inactiveTimeMode"}>12H</span>
         </div>
       </div>
     )
