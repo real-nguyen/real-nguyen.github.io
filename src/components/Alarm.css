@@ -12,6 +12,7 @@
   cursor: pointer;
   font-family: Arial, Helvetica, sans-serif;
   font-style: italic;
+  margin-left: 5vw;
 }
 
 .Alarm form {
@@ -33,7 +34,7 @@
   background-color: black;
   color: red;
   border: none;
-  width: 4em;
+  width: 3em;
   padding: 0;
 }
 
@@ -47,3 +48,14 @@
   color: #2a0000;
 }
 
+.alarmAmPm {
+  display: flex;
+  flex-direction: column;
+}
+
+.alarmAmPm span {
+  margin: initial;
+  margin-left: 1.5vw;
+  cursor: initial;
+  font-size: 4vh;
+}

@@ -9,7 +9,10 @@ export class App extends React.Component {
     this.state = {
       isHour12: false,
       time: '',
-      amPm: ''
+      amPm: '',
+      alarmOn: false,
+      alarmTime: '7:00',
+      alarmAmPm: 'AM'
     };
   }
 
@@ -51,6 +54,32 @@ export class App extends React.Component {
     this.setState({ time: this.setTime() });
   }
 
+  setAlarm = (e) => {
+    let date = new Date();
+    const [hour, minute] = e.target.value.split(':');
+    date.setHours(hour);
+    date.setMinutes(minute);
+    const alarmTime = date.toLocaleTimeString([], { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    console.log(alarmTime);
+    this.setState({ alarmTime: alarmTime });
+  }
+  
+  toggleAlarmOn = (e) => {
+    console.log(e.target);
+    if (e.target.className === "alarmTime activeAlarm") {
+      // Do not toggle alarm if alarm is already set
+      // Only way to turn it off is to press the "ALARM" button
+      return;
+    }
+    this.setState({
+      alarmOn: !this.state.alarmOn
+    })
+  }
+
   // Analogous to Angular's onInit
   componentDidMount() {
     this.setState({
@@ -66,15 +95,34 @@ export class App extends React.Component {
   }
 
   render() {
-    const { isHour12, amPm, time } = this.state;
+    const { 
+      isHour12, 
+      amPm, 
+      time,
+      alarmOn,
+      alarmTime,
+      alarmAmPm
+     } = this.state;
+     const {
+      toggleTimeMode,
+      setAlarm,
+      toggleAlarmOn
+     } = this;
     return (
       <div className="App">
         <Clock 
         isHour12={isHour12} 
         amPm={amPm} 
         time={time}
-        toggleTimeMode={this.toggleTimeMode}/>
-        <Alarm />
+        toggleTimeMode={toggleTimeMode}/>
+        <Alarm 
+        isHour12={isHour12} 
+        alarmAmPm={alarmAmPm}
+        alarmOn={alarmOn}
+        alarmTime={alarmTime}
+        setAlarm={setAlarm}
+        toggleAlarmOn={toggleAlarmOn}
+        />
       </div>
     );
   }

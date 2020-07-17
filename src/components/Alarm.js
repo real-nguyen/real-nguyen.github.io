@@ -1,79 +1,47 @@
 import React from 'react';
-import './Alarm.css'
+import PropTypes from 'prop-types';
+import './Alarm.css';
 
 export class Alarm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      alarmOn: false,
-      setAlarmMode: false,
-      alarmTime: '7:00'
-    };
-  }
-
-  setAlarm = (e) => {
-    let date = new Date();
-    const [hour, minute] = e.target.value.split(':');
-    date.setHours(hour);
-    date.setMinutes(minute);
-    const alarmTime = date.toLocaleTimeString([], { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-    console.log(alarmTime);
-    this.setState({ alarmTime: alarmTime });
-  }
-
-  componentDidMount() {
-    
-  }
-
-  toggleAlarmOn = (e) => {
-    console.log(e.target);
-    if (e.target.className === "alarmTime activeAlarm") {
-      // Do not toggle alarm if alarm is already set
-      // Only way to turn it off is to press the "ALARM" button
-      return;
-    }
-    this.setState({
-      alarmOn: !this.state.alarmOn
-    })
-  }
-
-  onClickAlarm = () => {
-    const { alarmOn, setAlarmMode } = this.state;
-    if (!alarmOn) {
-      this.setState({
-        alarmOn: !alarmOn,
-        setAlarmMode: !setAlarmMode
-      })
-    } else {
-      this.setState({
-        setAlarmMode: !setAlarmMode
-      })
-    }
-  }
-
   render() {
+    const { 
+      alarmOn, 
+      alarmTime, 
+      alarmAmPm, 
+      isHour12,
+      toggleAlarmOn,
+      setAlarm
+    } = this.props;
     return (
       <div className="Alarm">
-        <span className={this.state.alarmOn ? "active" : "inactive"} onClick={this.toggleAlarmOn.bind(this)}>ALARM</span>
+        <span className={alarmOn ? "active" : "inactive"} onClick={toggleAlarmOn.bind(this)}>ALARM</span>
         <form onSubmit={(e) => {e.preventDefault()}}>
           <input 
           type="text" 
           name="alarmTime" 
-          value={this.state.alarmTime}
-          onChange={this.setAlarm.bind(this)}
-          onFocus={this.toggleAlarmOn.bind(this)}
-          className={`alarmTime ${this.state.alarmOn ? "activeAlarm" : "inactiveAlarm"}`}
-          readOnly={!this.state.alarmOn}
+          value={alarmTime}
+          onChange={setAlarm.bind(this)}
+          onFocus={toggleAlarmOn.bind(this)}
+          className={`alarmTime ${alarmOn ? "activeAlarm" : "inactiveAlarm"}`}
+          readOnly={!alarmOn}
           />
         </form>
-        {/* <span className={this.state.alarmOn ? 'activeAlarm' : 'inactiveAlarm'} onClick={this.onClickAlarm.bind(this)}>7:00</span> */}
+        <div className={`alarmAmPm ${!isHour12 ? "hidden" : ""}`}>
+          <span className={alarmOn && alarmAmPm === 'AM' ? 'active' : 'inactive'}>AM</span>
+          <span className={alarmOn && alarmAmPm === 'PM' ? 'active' : 'inactive'}>PM</span>
+        </div>
       </div>
     );
   }
+}
+
+Alarm.propTypes = {
+  isHour12: PropTypes.bool.isRequired,
+  alarmOn: PropTypes.bool.isRequired,
+  alarmTime: PropTypes.string.isRequired,
+  alarmAmPm: PropTypes.string.isRequired,
+  toggleAlarmOn: PropTypes.func.isRequired,
+  setAlarm: PropTypes.func.isRequired
 }
 
 export default Alarm;
