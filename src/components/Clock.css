@@ -14,6 +14,7 @@
   width: 2.5em;
   /* h1 are bold by default */
   font-weight: lighter;
+  margin: 5vh;
 }
 
 .hidden {
@@ -29,20 +30,16 @@
   gap: 5vh;
 }
 
-.Clock .timeMode {
-  margin-right: 5vh;
-}
-
-.Clock .amPm {
-  margin-left: 5vh;
-}
-
 .Clock .timeMode span,
 .Clock .amPm span {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 12vh;
+  font-size: 10vh;
   font-style: italic;
   cursor: pointer;
+}
+
+.Clock .amPm span {
+  cursor: initial;
 }
 
 .active {
