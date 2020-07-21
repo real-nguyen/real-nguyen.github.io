@@ -15,10 +15,6 @@
   margin-left: 5vw;
 }
 
-.Alarm form {
-  margin-left: 10vw;
-}
-
 .active {
   color: #a9a9a9;
 }
@@ -27,14 +23,15 @@
   color: #292929;
 }
 
-.alarmTime {
+#alarmTime {
+  margin-left: 10vw;
   font-family: 'digital-7';
   text-align: right;
   font-size: 12vh;
   background-color: black;
   color: red;
   border: none;
-  width: 3em;
+  width: 4em;
   padding: 0;
 }
 

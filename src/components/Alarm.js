@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import $ from 'jquery';
+import timepicker from 'timepicker';
+import 'timepicker/jquery.timepicker.css';
 import './Alarm.css';
 
 export class Alarm extends React.Component {
@@ -12,12 +15,17 @@ export class Alarm extends React.Component {
       toggleAlarmOn,
       setAlarm
     } = this.props;
+    $('#alarmTime').timepicker({ 
+      'timeFormat': 'G:i',
+    });
+    $('#alarmTime').timepicker('setTime', alarmTime);
     return (
       <div className="Alarm">
         <span className={alarmOn ? "active" : "inactive"} onClick={toggleAlarmOn.bind(this)}>ALARM</span>
-        <form onSubmit={(e) => {e.preventDefault()}}>
+        <input id="alarmTime"></input>
+        {/* <form onSubmit={(e) => {e.preventDefault()}}>
           <input 
-          type="text" 
+          type="time" 
           name="alarmTime" 
           value={alarmTime}
           onChange={setAlarm.bind(this)}
@@ -25,10 +33,10 @@ export class Alarm extends React.Component {
           className={`alarmTime ${alarmOn ? "activeAlarm" : "inactiveAlarm"}`}
           readOnly={!alarmOn}
           />
-        </form>
+        </form> */}
         <div className={`alarmAmPm ${!isHour12 ? "hidden" : ""}`}>
-          <span className={alarmOn && alarmAmPm === 'AM' ? 'active' : 'inactive'}>AM</span>
-          <span className={alarmOn && alarmAmPm === 'PM' ? 'active' : 'inactive'}>PM</span>
+          <span className={alarmOn && alarmAmPm.toUpperCase() === 'AM' ? 'active' : 'inactive'}>AM</span>
+          <span className={alarmOn && alarmAmPm.toUpperCase() === 'PM' ? 'active' : 'inactive'}>PM</span>
         </div>
       </div>
     );
@@ -38,7 +46,7 @@ export class Alarm extends React.Component {
 Alarm.propTypes = {
   isHour12: PropTypes.bool.isRequired,
   alarmOn: PropTypes.bool.isRequired,
-  alarmTime: PropTypes.string.isRequired,
+  alarmTime: PropTypes.object.isRequired,
   alarmAmPm: PropTypes.string.isRequired,
   toggleAlarmOn: PropTypes.func.isRequired,
   setAlarm: PropTypes.func.isRequired

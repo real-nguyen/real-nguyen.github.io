@@ -11,8 +11,8 @@ export class App extends React.Component {
       time: '',
       amPm: '',
       alarmOn: false,
-      alarmTime: '7:00',
-      alarmAmPm: 'AM'
+      alarmTime: null,
+      alarmAmPm: ''
     };
   }
 
@@ -54,22 +54,50 @@ export class App extends React.Component {
     this.setState({ time: this.setTime() });
   }
 
-  setAlarm = (e) => {
+  getAlarmTime() {
+    let { alarmTime } = this.state;
+    // Set default alarm time (next day at 7:00 AM)
+    if (!alarmTime) {
     let date = new Date();
-    const [hour, minute] = e.target.value.split(':');
-    date.setHours(hour);
-    date.setMinutes(minute);
-    const alarmTime = date.toLocaleTimeString([], { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-    console.log(alarmTime);
-    this.setState({ alarmTime: alarmTime });
+      date.setHours(7);
+      date.setMinutes(0);
+      date.setSeconds(0);
+      // TODO: Test end of month values
+      date.setDate(date.getDate() + 1);
+      alarmTime = date;
+    }
+    return alarmTime;
+  }
+
+  setAlarm = (alarmTime) => {
+    // Should set the alarm to next day if current time is PM and alarm is before (lower PM or any AM) vice versa for AM
+    // Should set the alarm to same day if current time is AM and alarm is after (higher AM or any PM) vice versa for PM
+    const { isHour12, alarmAmPm, time, amPm } = this.state;
+    let date = new Date();
+    // let [hour, minute] = e.target.value.split(':');
+    // if (isHour12 && alarmAmPm === 'PM') {
+    //   hour = +hour + 12;
+    // }
+    // date.setHours(+hour);
+    // date.setMinutes(+minute);
+    // date.setSeconds(0);
+    // let currentTime = time;
+    // if (isHour12 && amPm === 'PM') {
+    //   // Always work with 24h for simplicity
+    //   let split = currentTime.split(':');
+    //   split[0] = `${+split[0] + 12}`;
+    //   currentTime = split.join(':');
+    // }
+    // const alarmTime = date.toLocaleTimeString([], { 
+    //   hour12: isHour12, 
+    //   hour: '2-digit', 
+    //   minute: '2-digit' 
+    // });
+    // console.log(alarmTime);
+    // this.setState({ alarmTime: alarmTime });
   }
   
   toggleAlarmOn = (e) => {
-    console.log(e.target);
     if (e.target.className === "alarmTime activeAlarm") {
       // Do not toggle alarm if alarm is already set
       // Only way to turn it off is to press the "ALARM" button
@@ -83,7 +111,8 @@ export class App extends React.Component {
   // Analogous to Angular's onInit
   componentDidMount() {
     this.setState({
-      time: this.setTime()
+      time: this.setTime(),
+      alarmTime: this.getAlarmTime()
     });
     // Calls tick every second
     this.intervalId = setInterval(() => this.tick(), 1000);
@@ -121,8 +150,7 @@ export class App extends React.Component {
         alarmOn={alarmOn}
         alarmTime={alarmTime}
         setAlarm={setAlarm}
-        toggleAlarmOn={toggleAlarmOn}
-        />
+        toggleAlarmOn={toggleAlarmOn}/>
       </div>
     );
   }
