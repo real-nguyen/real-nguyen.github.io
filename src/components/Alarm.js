@@ -45,7 +45,9 @@ export class Alarm extends React.Component {
     } = this.props;
     return (
       <div className="Alarm">
-        <span className={alarmOn ? "active" : "inactive"} onClick={toggleAlarmOn.bind(this)}>ALARM</span>
+        <span className={alarmOn ? "active" : "inactive"} onClick={toggleAlarmOn.bind(this)}>
+          ALARM{` ${alarmOn ? 'ON' : 'OFF'}`}
+        </span>
         <input
         className={`alarmTime ${alarmOn ? "activeAlarm" : "inactiveAlarm"}`}
         onFocus={toggleAlarmOn.bind(this)}

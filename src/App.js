@@ -71,7 +71,7 @@ export class App extends React.Component {
     const msAlarm = alarmTime.getTime() - new Date().getTime();
     this.setState({ alarmTime: alarmTime }, () => {
       this.timeoutId = setTimeout(() => {
-        const playPromise = document.getElementById("alarmAudio").play();
+        const playPromise = this.audio.play();
         if (playPromise !== undefined) {
           playPromise
           .then(() => {})
@@ -95,6 +95,18 @@ export class App extends React.Component {
 
   // Analogous to Angular's onInit
   componentDidMount() {
+    this.audio = new Audio(alarmAudio);
+    this.audio.loop = true;
+    this.audio.type = 'audio/mp3';
+    // Fix seamless playback
+    this.audio.addEventListener('timeupdate', function() {
+      const buffer = 0.1;
+      if(this.currentTime > this.duration - buffer) {
+          this.currentTime = 0;
+          this.play();
+      }
+  });
+  this.audio.load();
     this.setState({
       time: this.setTime()
     });
@@ -123,7 +135,6 @@ export class App extends React.Component {
      } = this;
     return (
       <div className="App">
-        <audio id="alarmAudio" src={alarmAudio} type="audio/mp3"></audio>
         <Clock 
         isHour12={isHour12} 
         amPm={amPm} 
