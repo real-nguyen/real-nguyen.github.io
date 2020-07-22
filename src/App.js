@@ -1,17 +1,19 @@
 import React from 'react';
 import './App.css';
+import alarmAudio from './static/alarm.mp3';
 import Clock from './components/Clock';
 import Alarm from './components/Alarm';
 
 export class App extends React.Component {
   constructor(props) {
     super(props);
+    const defaultAlarmTime = this.getDefaultAlarmTime()
     this.state = {
       isHour12: false,
       time: '',
       amPm: '',
       alarmOn: false,
-      alarmTime: null,
+      alarmTime: defaultAlarmTime,
       alarmAmPm: ''
     };
   }
@@ -54,51 +56,34 @@ export class App extends React.Component {
     this.setState({ time: this.setTime() });
   }
 
-  getAlarmTime() {
-    let { alarmTime } = this.state;
+  getDefaultAlarmTime() {
     // Set default alarm time (next day at 7:00 AM)
-    if (!alarmTime) {
     let date = new Date();
-      date.setHours(7);
-      date.setMinutes(0);
-      date.setSeconds(0);
-      // TODO: Test end of month values
-      date.setDate(date.getDate() + 1);
-      alarmTime = date;
-    }
-    return alarmTime;
+    date.setHours(7);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    // TODO: Test end of month values
+    date.setDate(date.getDate() + 1);
+    return date;
   }
 
-  setAlarm = (alarmTime) => {
-    // Should set the alarm to next day if current time is PM and alarm is before (lower PM or any AM) vice versa for AM
-    // Should set the alarm to same day if current time is AM and alarm is after (higher AM or any PM) vice versa for PM
-    const { isHour12, alarmAmPm, time, amPm } = this.state;
-    let date = new Date();
-    // let [hour, minute] = e.target.value.split(':');
-    // if (isHour12 && alarmAmPm === 'PM') {
-    //   hour = +hour + 12;
-    // }
-    // date.setHours(+hour);
-    // date.setMinutes(+minute);
-    // date.setSeconds(0);
-    // let currentTime = time;
-    // if (isHour12 && amPm === 'PM') {
-    //   // Always work with 24h for simplicity
-    //   let split = currentTime.split(':');
-    //   split[0] = `${+split[0] + 12}`;
-    //   currentTime = split.join(':');
-    // }
-    // const alarmTime = date.toLocaleTimeString([], { 
-    //   hour12: isHour12, 
-    //   hour: '2-digit', 
-    //   minute: '2-digit' 
-    // });
-    // console.log(alarmTime);
-    // this.setState({ alarmTime: alarmTime });
+  setAlarmTime = (alarmTime) => {
+    const msAlarm = alarmTime.getTime() - new Date().getTime();
+    this.setState({ alarmTime: alarmTime }, () => {
+      this.timeoutId = setTimeout(() => {
+        const playPromise = document.getElementById("alarmAudio").play();
+        if (playPromise !== undefined) {
+          playPromise
+          .then(() => {})
+          .catch((error) => { console.log(error) });
+        }
+
+      }, msAlarm);
+    });
   }
   
   toggleAlarmOn = (e) => {
-    if (e.target.className === "alarmTime activeAlarm") {
+    if (e.target.className.includes("alarmTime activeAlarm")) {
       // Do not toggle alarm if alarm is already set
       // Only way to turn it off is to press the "ALARM" button
       return;
@@ -111,8 +96,7 @@ export class App extends React.Component {
   // Analogous to Angular's onInit
   componentDidMount() {
     this.setState({
-      time: this.setTime(),
-      alarmTime: this.getAlarmTime()
+      time: this.setTime()
     });
     // Calls tick every second
     this.intervalId = setInterval(() => this.tick(), 1000);
@@ -134,22 +118,24 @@ export class App extends React.Component {
      } = this.state;
      const {
       toggleTimeMode,
-      setAlarm,
+      setAlarmTime,
       toggleAlarmOn
      } = this;
     return (
       <div className="App">
+        <audio id="alarmAudio" src={alarmAudio} type="audio/mp3"></audio>
         <Clock 
         isHour12={isHour12} 
         amPm={amPm} 
         time={time}
         toggleTimeMode={toggleTimeMode}/>
+
         <Alarm 
         isHour12={isHour12} 
         alarmAmPm={alarmAmPm}
         alarmOn={alarmOn}
         alarmTime={alarmTime}
-        setAlarm={setAlarm}
+        setAlarmTime={setAlarmTime}
         toggleAlarmOn={toggleAlarmOn}/>
       </div>
     );

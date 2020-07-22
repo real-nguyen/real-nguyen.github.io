@@ -23,7 +23,7 @@
   color: #292929;
 }
 
-#alarmTime {
+.alarmTime {
   margin-left: 10vw;
   font-family: 'digital-7';
   text-align: right;
