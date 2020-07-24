@@ -13,46 +13,51 @@
   font-family: Arial, Helvetica, sans-serif;
   font-style: italic;
   margin-left: 5vw;
+  width: 6em;
 }
 
-.active {
+.Alarm.active span,
+.Alarm .alarmAmPm span.active {
   color: #a9a9a9;
 }
 
-.inactive {
+.Alarm.inactive span,
+.Alarm .alarmAmPm span.inactive {
   color: #292929;
 }
 
-.alarmTime {
-  margin-left: 10vw;
+.Alarm.active input {
+  color: red;
+}
+
+.Alarm.inactive input {
+  color: #2a0000;
+}
+
+#alarmTime {
+  margin-left: 5vw;
   font-family: 'digital-7';
   text-align: right;
   font-size: 12vh;
   background-color: black;
-  color: red;
   border: none;
-  width: 4em;
+  width: 2.5em;
   padding: 0;
-}
-
-.activeAlarm {
-  font-family: 'digital-7';
-  color: red;
-}
-
-.inactiveAlarm {
-  font-family: 'digital-7';
-  color: #2a0000;
 }
 
 .alarmAmPm {
   display: flex;
-  flex-direction: column;
+  gap: 1vw;
+  margin-left: 1vw;
+  cursor: pointer;
 }
 
 .alarmAmPm span {
   margin: initial;
-  margin-left: 1.5vw;
-  cursor: initial;
-  font-size: 4vh;
+  font-size: 5vh;
+  width: initial;
+}
+
+ul.ui-timepicker-list li.ui-timepicker-disabled {
+  display: none;
 }

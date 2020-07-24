@@ -11,14 +11,14 @@ export class App extends React.Component {
     this.state = {
       isHour12: false,
       time: '',
-      amPm: '',
+      amPm: 'AM',
       alarmOn: false,
       alarmTime: defaultAlarmTime,
-      alarmAmPm: ''
+      alarmAmPm: 'AM'
     };
   }
 
-  setTime = () => {
+  getTime() {
     const { isHour12 } = this.state;
     let time = new Date().toLocaleTimeString([], { 
       hour12: isHour12, 
@@ -26,34 +26,34 @@ export class App extends React.Component {
       minute: '2-digit' 
     });
     if (isHour12) {
-      // Remove AM/PM indicator
-      return time.split(' ')[0];
+      return time.split(' ');
     }
     return time;
   }
 
-  setAmPm = () => {
-    const date = new Date().toLocaleTimeString([], {hour12: true});
-    return date.split(' ')[1];
-  }
-
   toggleTimeMode = () => {
+    const { isHour12 } = this.state;
     this.setState({
-      isHour12: !this.state.isHour12
+      isHour12: !isHour12
     },
     // Add tick as callback for instant feedback
     () => {
       this.tick();
-      if (this.state.isHour12) {
-        this.setState({
-          amPm: this.setAmPm()
-        })
-      }
     });
   }
   
   tick() {
-    this.setState({ time: this.setTime() });
+    let time, amPm;
+    if (this.state.isHour12) {
+      [time, amPm] = this.getTime();
+    } else {
+      time = this.getTime();
+      amPm = this.state.amPm;
+    }
+    this.setState({
+      time: time,
+      amPm: amPm
+    });
   }
 
   getDefaultAlarmTime() {
@@ -68,7 +68,14 @@ export class App extends React.Component {
   }
 
   setAlarmTime = (alarmTime) => {
-    const msAlarm = alarmTime.getTime() - new Date().getTime();
+    const now = new Date();
+    // Should set the alarm to next day if current time is PM and alarm is before (lower PM or any AM) vice versa for AM
+    // Should set the alarm to same day if current time is AM and alarm is after (higher AM or any PM) vice versa for PM
+    if (alarmTime < now) {
+      // Works even at end of month
+      alarmTime.setDate(alarmTime.getDate() + 1);
+    }
+    const msAlarm = alarmTime.getTime() - now.getTime();
     this.setState({ alarmTime: alarmTime }, () => {
       this.timeoutId = setTimeout(() => {
         const playPromise = this.audio.play();
@@ -77,20 +84,52 @@ export class App extends React.Component {
           .then(() => {})
           .catch((error) => { console.log(error) });
         }
-
       }, msAlarm);
+    });
+  }
+
+  toggleAlarmAmPm = (e) => {
+    const alarmAmPm = this.state.alarmAmPm === 'AM' ? 'PM' : 'AM';
+    this.setState({
+      alarmAmPm: alarmAmPm
+    }, () => {
+      let { alarmTime } = this.state;
+      const now = new Date();
+      const hours = alarmTime.getHours();
+      // Set alarm to current date and let setAlarmTime handle add days
+      const timeOfDay = now.getHours() < 12 ? 'AM' : 'PM';
+      alarmTime.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+      // If time AM and toggle alarm to AM, subtract 12h
+      // If time PM and toggle alarm to AM, subtract 12h
+      if ((timeOfDay === 'AM' && alarmAmPm === 'AM') || (timeOfDay === 'PM' && alarmAmPm === 'AM')) {
+        alarmTime.setHours(hours - 12);
+      // If time AM and toggle alarm to PM, add 12h
+      // If time PM and toggle alarm to PM, add 12h
+      } else if ((timeOfDay === 'AM' && alarmAmPm === 'PM') || (timeOfDay === 'PM' && alarmAmPm === 'PM')) {
+        alarmTime.setHours(hours + 12);
+      }
+      this.setAlarmTime(alarmTime);
     });
   }
   
   toggleAlarmOn = (e) => {
-    if (e.target.className.includes("alarmTime activeAlarm")) {
-      // Do not toggle alarm if alarm is already set
+    if (e.target.id === 'alarmTime' && e.target.parentNode.className.includes('Alarm active')) {
+      // Do not toggle alarm if alarm is already on
       // Only way to turn it off is to press the "ALARM" button
       return;
     }
+    const { alarmOn, alarmTime } = this.state;
     this.setState({
-      alarmOn: !this.state.alarmOn
-    })
+      alarmOn: !alarmOn
+    }, () => {
+      // Must directly reference this.state.alarmOn in callback
+      // Destructured alarmOn stays the same after toggle!
+      if (this.state.alarmOn) {
+        this.setAlarmTime(alarmTime);
+      } else {
+        clearTimeout(this.timeoutId);
+      }
+    });
   }
 
   // Analogous to Angular's onInit
@@ -105,10 +144,10 @@ export class App extends React.Component {
           this.currentTime = 0;
           this.play();
       }
-  });
-  this.audio.load();
+    });
+    this.audio.load();
     this.setState({
-      time: this.setTime()
+      time: this.getTime()
     });
     // Calls tick every second
     this.intervalId = setInterval(() => this.tick(), 1000);
@@ -117,6 +156,7 @@ export class App extends React.Component {
   // Analogous to Angular's onDestroy
   componentWillUnmount() {
     clearInterval(this.intervalId);
+    clearTimeout(this.timeoutId);
   }
 
   render() {
@@ -131,7 +171,8 @@ export class App extends React.Component {
      const {
       toggleTimeMode,
       setAlarmTime,
-      toggleAlarmOn
+      toggleAlarmOn,
+      toggleAlarmAmPm
      } = this;
     return (
       <div className="App">
@@ -147,7 +188,8 @@ export class App extends React.Component {
         alarmOn={alarmOn}
         alarmTime={alarmTime}
         setAlarmTime={setAlarmTime}
-        toggleAlarmOn={toggleAlarmOn}/>
+        toggleAlarmOn={toggleAlarmOn}
+        toggleAlarmAmPm={toggleAlarmAmPm}/>
       </div>
     );
   }

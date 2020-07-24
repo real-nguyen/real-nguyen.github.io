@@ -21,8 +21,7 @@ export class Clock extends React.Component {
         </div>
         <h1>{time}</h1>
         <div className={`amPm ${!isHour12 ? "hidden" : ""}`}>
-          <span className={amPm.toUpperCase() === 'AM' ? 'active' : 'inactive'}>AM</span>
-          <span className={amPm.toUpperCase() === 'PM' ? 'active' : 'inactive'}>PM</span>
+          <span className="active">{amPm.toUpperCase()}</span>
         </div>
       </div>
     )
